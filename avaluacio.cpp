@@ -65,13 +65,50 @@ int main(){
         }
     }
 
-    //Extreure Precision, Recall i F1score de la matriu de confusió
-    int precision, recall, f1score;
-    int pc=0, pf=0, nc=0;
-    for (int i=0; i<10; i++){
-        for(int j=0; j<10; j++){
+    //mostra matriu confusió
+    /*
+    for (int i=1; i<10; i++){
+        for(int j=1; j<10; j++){
             cout<<ConfusionMatrix[i][j]<<' ';
         }
         cout<<endl;
     }
+    */
+
+    //Extreure Precision, Recall i F1score de la matriu de confusió
+    float pc[10]={0}, pf[10]={0}, nc[10]={0};
+    //FILES
+    for (int i=1; i<10; i++){
+        for(int j=1; j<10; j++){
+            if(i==j){
+                pc[i]+=ConfusionMatrix[i][j];
+            } else{
+                nc[i]+=ConfusionMatrix[i][j];
+            }
+        }
+    }
+    //COLUMNES
+    for (int j=1; j<10; j++){
+        for(int i=1; i<10; i++){
+            if(i!=j){
+                pf[j]+=ConfusionMatrix[i][j];
+            }
+        }
+    }
+
+    //Càlcul i escriptura de paràmetres
+    float Precision[10]={0}, Recall[10]={0}, f1Score[10]={0};
+
+    //Calculem mitjana aritmètica
+    float prec=0, rec=0, f=0;
+    for(int k=1; k<10; k++){
+        //cout<<pc[k]<<' '<<pf[k]<<' '<<nc[k]<<endl;
+        Precision[k]=pc[k]/(pc[k]+pf[k]);
+        Recall[k]=pc[k]/(pc[k]+nc[k]);
+        f1Score[k]=2*Precision[k]*Recall[k]/(Precision[k]+Recall[k]);
+        prec+=Precision[k]; rec+=Recall[k]; f+=f1Score[k];
+    }
+    prec/=9; rec/=9; f/=9;
+    cout<<prec<<' '<<rec<<' '<<f<<endl;
+
 }
