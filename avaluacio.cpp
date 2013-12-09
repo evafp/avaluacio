@@ -9,12 +9,7 @@ struct EventDetection{
     string ID, event;
 };
 
-int main(){
-    string fID, fEv;
-    //Lectura fitxer Resultats
-    vector<EventDetection> res;
-    EventDetection ED;
-    ifstream F;
+void FillVector(vector<EventDetection>& res, EventDetection& ED, ifstream& F, string& fID, string& fEv){
     F.open("Resultats.txt");
     string linia="";
     while(!F.eof()){
@@ -29,11 +24,11 @@ int main(){
         }
     }
     F.close();
+}
 
-    //Lectura fitxer solucions
-    map<string, string> sols;
+void FillMap(map<string, string>& sols, ifstream& F, string& fID, string& fEv){
+    string linia="";
     F.open("Solucions.txt");
-    linia.clear();
     while(!F.eof()){
         getline(F, linia);
         int idx=linia.find(' ');
@@ -44,14 +39,16 @@ int main(){
         }
     }
     F.close();
+}
 
-    //Creació map auxiliar per a l'assignació de nom_event=index
-    map<string, int> aux;
-    aux["concert"]=1; aux["exhibition"]=2; aux["fashion"]=3; aux["non_event"]=4; aux["other"]=5;
-    aux["protest"]=6; aux["sports"]=7; aux["theater_dance"]=8; aux["conference"]=9;
+map<string, int> IndexationMap(){
+    map<string, int> idx;
+    idx["concert"]=1; idx["exhibition"]=2; idx["fashion"]=3; idx["non_event"]=4; idx["other"]=5;
+    idx["protest"]=6; idx["sports"]=7; idx["theater_dance"]=8; idx["conference"]=9;
+    return idx;
+}
 
-    //Búsqueda IDs al map de solucions
-    int ConfusionMatrix[10][10]={{0}};//tot zeros
+void ConfusionMatrixConstruction(const vector<EventDetection>& res, map<string, string> sols, map<string, int> aux, float ConfusionMatrix[10][10]){
     for(int i=0; i<res.size(); i++){
         //cout<<res[i].ID<<' '<<res[i].event<<endl;
         map<string, string>::iterator it=sols.find(res[i].ID);
@@ -64,19 +61,9 @@ int main(){
             }
         }
     }
+}
 
-    //mostra matriu confusió
-    /*
-    for (int i=1; i<10; i++){
-        for(int j=1; j<10; j++){
-            cout<<ConfusionMatrix[i][j]<<' ';
-        }
-        cout<<endl;
-    }
-    */
-
-    //Extreure Precision, Recall i F1score de la matriu de confusió
-    float pc[10]={0}, pf[10]={0}, nc[10]={0};
+void RatesExtraction(const float ConfusionMatrix[10][10], float pc[10], float pf[10], float nc[10]){
     //FILES
     for (int i=1; i<10; i++){
         for(int j=1; j<10; j++){
@@ -95,20 +82,50 @@ int main(){
             }
         }
     }
+}
+
+int main(){
+    string fID, fEv;
+    //Lectura fitxer Resultats
+    vector<EventDetection> res;
+    EventDetection ED;
+    ifstream F;
+    FillVector(res, ED, F, fID, fEv);
+
+
+    //Lectura fitxer solucions
+    map<string, string> sols;
+    FillMap(sols, F, fID, fEv);
+
+    //Creació map auxiliar per a l'assignació de nom_event=index
+    map<string, int> aux=IndexationMap();
+
+
+    //Búsqueda IDs al map de solucions
+    float ConfusionMatrix[10][10]={{0}};//tot zeros
+    ConfusionMatrixConstruction(res, sols, aux, ConfusionMatrix);
+
+    //Extreure Precision, Recall i F1score de la matriu de confusió
+    float pc[10]={0}, pf[10]={0}, nc[10]={0};
+    RatesExtraction(ConfusionMatrix, pc, pf, nc);
 
     //Càlcul i escriptura de paràmetres
     float Precision[10]={0}, Recall[10]={0}, f1Score[10]={0};
-
-    //Calculem mitjana aritmètica
-    float prec=0, rec=0, f=0;
     for(int k=1; k<10; k++){
         //cout<<pc[k]<<' '<<pf[k]<<' '<<nc[k]<<endl;
         Precision[k]=pc[k]/(pc[k]+pf[k]);
         Recall[k]=pc[k]/(pc[k]+nc[k]);
         f1Score[k]=2*Precision[k]*Recall[k]/(Precision[k]+Recall[k]);
-        prec+=Precision[k]; rec+=Recall[k]; f+=f1Score[k];
     }
-    prec/=9; rec/=9; f/=9;
-    cout<<prec<<' '<<rec<<' '<<f<<endl;
+
+    //WriteOutput files
+    ofstream G, H, I;
+    G.open("Precision.txt"); H.open("Recall.txt"); I.open("f1Score.txt");
+    for(int n=1; n<10; n++){
+        G<<Precision[n]<<endl;
+        H<<Recall[n]<<endl;
+        I<<f1Score[n]<<endl;
+    }
+
 
 }
