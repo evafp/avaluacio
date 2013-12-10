@@ -10,7 +10,7 @@ struct EventDetection{
 };
 
 void FillVector(vector<EventDetection>& res, EventDetection& ED, ifstream& F, string& fID, string& fEv){
-    F.open("Resultats.txt");
+    F.open("1.3.txt");
     string linia="";
     while(!F.eof()){
         getline(F, linia);
@@ -63,7 +63,7 @@ void ConfusionMatrixConstruction(const vector<EventDetection>& res, map<string, 
     }
 }
 
-/*
+
 void ShowConfusionMatrix(float ConfusionMatrix[10][10]){
     for(int i=1; i<10; i++){
         for(int j=1; j<10; j++){
@@ -72,7 +72,7 @@ void ShowConfusionMatrix(float ConfusionMatrix[10][10]){
         cout<<endl;
     }
 }
-*/
+
 
 void RatesExtraction(const float ConfusionMatrix[10][10], float pc[10], float pf[10], float nc[10], float total){
     //FILES
@@ -100,12 +100,15 @@ void RatesExtraction(const float ConfusionMatrix[10][10], float pc[10], float pf
 
 float Median(float Vector[10]){
     float median=0.0;
+    float cnt=0.0;
     for(int j=1; j<10; j++){
-        if(Vector[j]!=0){
+        if(Vector[j]>0){
             median+=Vector[j];
+            //cout<<Vector[j]<<endl;
+            cnt++;
         }
     }
-    return median/9.0;
+    return median/cnt;
 }
 
 int main(){
@@ -128,7 +131,9 @@ int main(){
     //Búsqueda IDs al map de solucions
     float ConfusionMatrix[10][10]={{0}};//tot zeros
     ConfusionMatrixConstruction(res, sols, aux, ConfusionMatrix);
-    //ShowConfusionMatrix(ConfusionMatrix)
+    //ShowConfusionMatrix(ConfusionMatrix);
+
+
 
     //Extreure Precision, Recall i F1score de la matriu de confusió
     float pc[10]={0}, pf[10]={0}, nc[10]={0};
@@ -154,7 +159,7 @@ int main(){
     PositiveProb/=total;
 
     ofstream G;
-    G.open("mesures.txt");
+    G.open("1.3_a.txt");
     G<<"Precision: "<<Median(Precision)<<endl;
     G<<"Recall: "<<Median(Recall)<<endl;
     G<<"f1Score: "<<Median(f1Score)<<endl;
@@ -176,4 +181,3 @@ int main(){
     */
 
 }
-
