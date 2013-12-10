@@ -63,6 +63,17 @@ void ConfusionMatrixConstruction(const vector<EventDetection>& res, map<string, 
     }
 }
 
+/*
+void ShowConfusionMatrix(float ConfusionMatrix[10][10]){
+    for(int i=1; i<10; i++){
+        for(int j=1; j<10; j++){
+            cout<<ConfusionMatrix[i][j]<<' ';
+        }
+        cout<<endl;
+    }
+}
+*/
+
 void RatesExtraction(const float ConfusionMatrix[10][10], float pc[10], float pf[10], float nc[10], float total){
     //FILES
     for (int i=1; i<10; i++){
@@ -87,6 +98,14 @@ void RatesExtraction(const float ConfusionMatrix[10][10], float pc[10], float pf
     }
 }
 
+float CalculateMedian(float Vector[10]){
+    float median=0.0;
+    for(int j=1; j<10; j++){
+        median+=Vector[j];
+    }
+    return median;
+}
+
 int main(){
     string fID, fEv;
     //Lectura fitxer Resultats
@@ -107,6 +126,7 @@ int main(){
     //Búsqueda IDs al map de solucions
     float ConfusionMatrix[10][10]={{0}};//tot zeros
     ConfusionMatrixConstruction(res, sols, aux, ConfusionMatrix);
+    //ShowConfusionMatrix(ConfusionMatrix)
 
     //Extreure Precision, Recall i F1score de la matriu de confusió
     float pc[10]={0}, pf[10]={0}, nc[10]={0};
@@ -117,19 +137,22 @@ int main(){
     float Precision[10]={0}, Recall[10]={0}, f1Score[10]={0}, Specificity[10]={0};
     float PositiveProb=0;
     for(int k=1; k<10; k++){
-        //cout<<pc[k]<<' '<<pf[k]<<' '<<nc[k]<<endl;
         Precision[k]=pc[k]/(pc[k]+pf[k]);
         Recall[k]=pc[k]/(pc[k]+nc[k]);
         f1Score[k]=2*Precision[k]*Recall[k]/(Precision[k]+Recall[k]);
         Specificity[k]=nc[k]/(nc[k]+pf[k]);
         PositiveProb+=pf[k]+pc[k];
-        //cout<<PositiveProb<<endl;
     }
-    cout<<PositiveProb<<' '<<total<<endl;
     PositiveProb/=total;
 
+    ofstream G;
+    G.open("mesures.txt");
+    G<<"Precision: "<<Median(Precision)<<endl;
+    G<<"Recall: "<<Median(Recall)<<endl;
+    G<<"f1Score: "<<Median(f1Score)<<endl;
+
     //WriteOutput files
-    ofstream G, H, I, J, K;
+    /*ofstream G, H, I, J, K;
     G.open("Precision.txt"); H.open("Recall.txt"); I.open("f1Score.txt"); J.open("Specificity.txt");
     K.open("PositiveP.txt");
     for(int n=1; n<10; n++){
@@ -142,6 +165,6 @@ int main(){
 
     //Delimitador matlab
     G<<','<<endl; H<<','<<endl; I<<','<<endl; J<<','<<endl;
-
+    */
 
 }
