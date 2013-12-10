@@ -57,7 +57,7 @@ void ConfusionMatrixConstruction(const vector<EventDetection>& res, map<string, 
             map<string, int>::iterator it_res=aux.find(res[i].event);
             map<string, int>::iterator it_sols=aux.find((*it).second);
             if(it_res!=aux.end() && it_sols!=aux.end()){
-                ConfusionMatrix[(*it_res).second][(*it_sols).second]++;
+                ConfusionMatrix[(*it_sols).second][(*it_res).second]++;
             }
         }
     }
