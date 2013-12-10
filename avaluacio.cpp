@@ -105,7 +105,7 @@ float Median(float Vector[10]){
             median+=Vector[j];
         }
     }
-    return median;
+    return median/9.0;
 }
 
 int main(){
