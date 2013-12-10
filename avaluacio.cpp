@@ -98,10 +98,12 @@ void RatesExtraction(const float ConfusionMatrix[10][10], float pc[10], float pf
     }
 }
 
-float CalculateMedian(float Vector[10]){
+float Median(float Vector[10]){
     float median=0.0;
     for(int j=1; j<10; j++){
-        median+=Vector[j];
+        if(Vector[j]!=0){
+            median+=Vector[j];
+        }
     }
     return median;
 }
@@ -139,7 +141,13 @@ int main(){
     for(int k=1; k<10; k++){
         Precision[k]=pc[k]/(pc[k]+pf[k]);
         Recall[k]=pc[k]/(pc[k]+nc[k]);
-        f1Score[k]=2*Precision[k]*Recall[k]/(Precision[k]+Recall[k]);
+        float p=Precision[k];
+        float r=Recall[k];
+        if(p!=0 && r!=0){
+            f1Score[k]=2.0*(p*r/(p+r));
+        } else{
+            f1Score[k]=0.0;
+        }
         Specificity[k]=nc[k]/(nc[k]+pf[k]);
         PositiveProb+=pf[k]+pc[k];
     }
@@ -168,3 +176,4 @@ int main(){
     */
 
 }
+
