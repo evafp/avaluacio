@@ -74,7 +74,7 @@ void ShowConfusionMatrix(float ConfusionMatrix[10][10]){
 }
 
 
-void RatesExtraction(const float ConfusionMatrix[10][10], float pc[10], float pf[10], float nc[10], float total){
+void RatesExtraction(const float ConfusionMatrix[10][10], float pc[10], float pf[10], float nc[10], float nf[10], float total){
     //FILES
     for (int i=1; i<10; i++){
         for(int j=1; j<10; j++){
@@ -93,7 +93,8 @@ void RatesExtraction(const float ConfusionMatrix[10][10], float pc[10], float pf
             if(i!=j){
                 pf[j]+=ConfusionMatrix[i][j];
             }
-            total+=ConfusionMatrix[i][j];
+	    nf[i]=total-pc[i]-nc[i]-pf[j];
+	    if(nf[i]<0) nf[i]=0;
         }
     }
 }
@@ -136,13 +137,12 @@ int main(){
 
 
     //Extreure Precision, Recall i F1score de la matriu de confusió
-    float pc[10]={0}, pf[10]={0}, nc[10]={0};
+    float pc[10]={0}, pf[10]={0}, nc[10]={0}, nf[10]={0};
     float total=0;
-    RatesExtraction(ConfusionMatrix, pc, pf, nc, total);
+    RatesExtraction(ConfusionMatrix, pc, pf, nc, nf, total);
 
     //Càlcul i escriptura de paràmetres
-    float Precision[10]={0}, Recall[10]={0}, f1Score[10]={0}, Specificity[10]={0};
-    float PositiveProb=0;
+    float Precision[10]={0}, Recall[10]={0}, f1Score[10]={0}, Accuracy[10]={0};
     for(int k=1; k<10; k++){
         Precision[k]=pc[k]/(pc[k]+pf[k]);
         Recall[k]=pc[k]/(pc[k]+nc[k]);
@@ -153,10 +153,10 @@ int main(){
         } else{
             f1Score[k]=0.0;
         }
-        Specificity[k]=nc[k]/(nc[k]+pf[k]);
-        PositiveProb+=pf[k]+pc[k];
+	Accuracy[k]=(pc[k]+nc[k])/total; //?????????? o bé utilitzar fórmula amb tots els paràmetres
+        
     }
-    PositiveProb/=total;
+
 
     ofstream G;
     G.open("1.3_a.txt");
@@ -175,9 +175,6 @@ int main(){
         J<<Specificity[n]<<endl;
         K<<PositiveProb<<endl;
     }
-
-    //Delimitador matlab
-    G<<','<<endl; H<<','<<endl; I<<','<<endl; J<<','<<endl;
-    */
+	*/
 
 }
