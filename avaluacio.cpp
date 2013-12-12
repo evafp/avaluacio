@@ -153,16 +153,23 @@ int main(){
         } else{
             f1Score[k]=0.0;
         }
-	Accuracy[k]=(pc[k]+nc[k])/total; //?????????? o bé utilitzar fórmula amb tots els paràmetres
+	Accuracy[k]=(pc[k]+nc[k])/total; //?????????? o bé utilitzar fórmula amb tots els paràmetres <-- per classe
+	//float accuracy=0;
+	//accuracy+=pc[k]/(total-pc[k]); //ja és la mitjana
         
     }
+ 
+    float fscore = Median(f1Score);
+    float Accuracy = Median (Accuracy); //hauria de donar el mateix que accuracy
 
+/*
 
     ofstream G;
     G.open("1.3_a.txt");
     G<<"Precision: "<<Median(Precision)<<endl;
     G<<"Recall: "<<Median(Recall)<<endl;
     G<<"f1Score: "<<Median(f1Score)<<endl;
+*/
 
     //WriteOutput files
     /*ofstream G, H, I, J, K;
