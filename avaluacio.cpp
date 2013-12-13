@@ -81,18 +81,18 @@ void RatesExtraction(const float ConfusionMatrix[10][10], float pc[10], float pf
             if(i==j){
                 pc[i]+=ConfusionMatrix[i][j];
             } else{
-                nc[i]+=ConfusionMatrix[i][j];
+                pf[i]+=ConfusionMatrix[i][j];
             }
         }
-
     }
     //COLUMNES
     for (int j=1; j<10; j++){
         for(int i=1; i<10; i++){
             if(i!=j){
-                pf[j]+=ConfusionMatrix[i][j];
+                nc[j]+=ConfusionMatrix[i][j];
             }
         }
+        cout<<j<<' '<<nc[j]<<endl;
     }
 }
 
