@@ -10,7 +10,7 @@ struct EventDetection{
 };
 
 void FillVector(vector<EventDetection>& res, EventDetection& ED, ifstream& F, string& fID, string& fEv){
-    F.open("1.3.txt");
+    F.open("Resultats.txt");
     string linia="";
     while(!F.eof()){
         getline(F, linia);
@@ -74,7 +74,7 @@ void ShowConfusionMatrix(float ConfusionMatrix[10][10]){
 }
 
 
-void RatesExtraction(const float ConfusionMatrix[10][10], float pc[10], float pf[10], float nc[10], float nf[10], float total){
+void RatesExtraction(const float ConfusionMatrix[10][10], float pc[10], float pf[10], float nc[10]){
     //FILES
     for (int i=1; i<10; i++){
         for(int j=1; j<10; j++){
@@ -83,7 +83,6 @@ void RatesExtraction(const float ConfusionMatrix[10][10], float pc[10], float pf
             } else{
                 nc[i]+=ConfusionMatrix[i][j];
             }
-            total+=ConfusionMatrix[i][j];
         }
 
     }
@@ -93,10 +92,18 @@ void RatesExtraction(const float ConfusionMatrix[10][10], float pc[10], float pf
             if(i!=j){
                 pf[j]+=ConfusionMatrix[i][j];
             }
-	    nf[i]=total-pc[i]-nc[i]-pf[j];
-	    if(nf[i]<0) nf[i]=0;
         }
     }
+}
+
+float GetTotal(float ConfusionMatrix[10][10]){
+    float total=0;
+    for (int i=1; i<10; i++){
+        for(int j=1; j<10; j++){
+            total+=ConfusionMatrix[i][j];
+        }
+    }
+    return total;
 }
 
 float Median(float Vector[10]){
@@ -139,49 +146,50 @@ int main(){
     //Extreure Precision, Recall i F1score de la matriu de confusió
     float pc[10]={0}, pf[10]={0}, nc[10]={0}, nf[10]={0};
     float total=0;
-    RatesExtraction(ConfusionMatrix, pc, pf, nc, nf, total);
+    RatesExtraction(ConfusionMatrix, pc, pf, nc);
+    total=GetTotal(ConfusionMatrix);
 
     //Càlcul i escriptura de paràmetres
     float Precision[10]={0}, Recall[10]={0}, f1Score[10]={0}, Accuracy[10]={0};
+    float accuracy=0;
     for(int k=1; k<10; k++){
         Precision[k]=pc[k]/(pc[k]+pf[k]);
         Recall[k]=pc[k]/(pc[k]+nc[k]);
         float p=Precision[k];
         float r=Recall[k];
         if(p!=0 && r!=0){
-            f1Score[k]=2.0*(p*r/(p+r));
+            f1Score[k]=2.0*(p*r)/(p+r);
         } else{
             f1Score[k]=0.0;
         }
-	Accuracy[k]=(pc[k]+nc[k])/total; //?????????? o bé utilitzar fórmula amb tots els paràmetres <-- per classe
-	//float accuracy=0;
-	//accuracy+=pc[k]/(total-pc[k]); //ja és la mitjana
-        
-    }
- 
-    float fscore = Median(f1Score);
-    float Accuracy = Median (Accuracy); //hauria de donar el mateix que accuracy
+        //Accuracy[k]=(pc[k]+nc[k])/total; //?????????? o bé utilitzar fórmula amb tots els paràmetres <-- per classe
+        accuracy+=pc[k]/total; //ja és la mitjana
 
+    }
+
+    float fscore = Median(f1Score);
+    //float Accuracy2 = Median (Accuracy); //hauria de donar el mateix que accuracy
+    cout<<fscore<<' '<<accuracy<<endl;
 /*
 
-    ofstream G;
-    G.open("1.3_a.txt");
-    G<<"Precision: "<<Median(Precision)<<endl;
-    G<<"Recall: "<<Median(Recall)<<endl;
-    G<<"f1Score: "<<Median(f1Score)<<endl;
+ofstream G;
+G.open("1.3_a.txt");
+G<<"Precision: "<<Median(Precision)<<endl;
+G<<"Recall: "<<Median(Recall)<<endl;
+G<<"f1Score: "<<Median(f1Score)<<endl;
 */
 
     //WriteOutput files
     /*ofstream G, H, I, J, K;
-    G.open("Precision.txt"); H.open("Recall.txt"); I.open("f1Score.txt"); J.open("Specificity.txt");
-    K.open("PositiveP.txt");
-    for(int n=1; n<10; n++){
-        G<<Precision[n]<<endl;
-        H<<Recall[n]<<endl;
-        I<<f1Score[n]<<endl;
-        J<<Specificity[n]<<endl;
-        K<<PositiveProb<<endl;
-    }
-	*/
+G.open("Precision.txt"); H.open("Recall.txt"); I.open("f1Score.txt"); J.open("Specificity.txt");
+K.open("PositiveP.txt");
+for(int n=1; n<10; n++){
+G<<Precision[n]<<endl;
+H<<Recall[n]<<endl;
+I<<f1Score[n]<<endl;
+J<<Specificity[n]<<endl;
+K<<PositiveProb<<endl;
+}
+        */
 
 }
