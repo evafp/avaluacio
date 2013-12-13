@@ -10,7 +10,7 @@ struct EventDetection{
 };
 
 void FillVector(vector<EventDetection>& res, EventDetection& ED, ifstream& F, string& fID, string& fEv){
-    F.open("Resultats.txt");
+    F.open("Results_sessio6.txt");
     string linia="";
     while(!F.eof()){
         getline(F, linia);
@@ -57,7 +57,7 @@ void ConfusionMatrixConstruction(const vector<EventDetection>& res, map<string, 
             map<string, int>::iterator it_res=aux.find(res[i].event);
             map<string, int>::iterator it_sols=aux.find((*it).second);
             if(it_res!=aux.end() && it_sols!=aux.end()){
-                ConfusionMatrix[(*it_sols).second][(*it_res).second]++;
+                ConfusionMatrix[(*it_res).second][(*it_sols).second]++;
             }
         }
     }
@@ -92,7 +92,6 @@ void RatesExtraction(const float ConfusionMatrix[10][10], float pc[10], float pf
                 nc[j]+=ConfusionMatrix[i][j];
             }
         }
-        cout<<j<<' '<<nc[j]<<endl;
     }
 }
 
